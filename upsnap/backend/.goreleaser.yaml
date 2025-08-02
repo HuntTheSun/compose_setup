@@ -1,0 +1,79 @@
+version: 2
+release:
+  draft: false
+  prerelease: auto
+before:
+  hooks:
+    - go mod tidy
+builds:
+  - binary: upsnap
+    env:
+      - CGO_ENABLED=0
+    ldflags:
+      - -s -w -X github.com/seriousm4x/upsnap/pb.Version={{ .Tag }}
+    goos:
+      - linux
+      - windows
+      - darwin
+      - freebsd
+    goarch:
+      - amd64
+      - arm64
+      - arm
+    goarm:
+      - "6"
+      - "7"
+    ignore:
+      - goos: windows
+        goarch: arm
+      - goos: darwin
+        goarch: arm
+      - goos: freebsd
+        goarch: arm
+archives:
+  - formats: [ 'zip' ]
+checksum:
+  name_template: "checksums.txt"
+snapshot:
+  version_template: "{{ .Version }}"
+changelog:
+  use: github
+  sort: asc
+  groups:
+    - title: Features
+      regexp: '^.*?feat(\([[:word:]]+\))??!?:.+$'
+      order: 0
+    - title: "Bug fixes"
+      regexp: '^.*?fix(\([[:word:]]+\))??!?:.+$'
+      order: 1
+    - title: "Go dependencies"
+      regexp: '^.*?go-dep(\([[:word:]]+\))??!?:.+$'
+      order: 3
+    - title: "Npm dependencies"
+      regexp: '^.*?npm-dep(\([[:word:]]+\))??!?:.+$'
+      order: 4
+    - title: "Github Actions"
+      regexp: '^.*?gh-action(\([[:word:]]+\))??!?:.+$'
+      order: 5
+    - title: Others
+      order: 2
+git:
+  ignore_tags:
+    - "{{ if not .Prerelease}}*beta*{{ end }}"
+aurs:
+  - name: upsnap-bin
+    homepage: https://github.com/seriousm4x/UpSnap
+    description: "A simple wake on lan web app written with SvelteKit, Go and PocketBase."
+    maintainers:
+      - "SeriousM4x <maxi at quoss dot org>"
+    license: "MIT"
+    private_key: "{{ .Env.AUR_KEY }}"
+    git_url: "ssh://aur@aur.archlinux.org/upsnap-bin.git"
+    package: |-
+      install -Dm755 "./upsnap" "${pkgdir}/usr/bin/upsnap"
+    skip_upload: auto
+    optdepends:
+      - "nmap: to scan for network devices"
+    commit_author:
+      name: goreleaserbot
+      email: bot@goreleaser.com
