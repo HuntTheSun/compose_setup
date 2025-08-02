@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx-reverse-proxy
+    restart: always
+    volumes:
+      - ./default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./includes:/etc/nginx/includes/:ro  
+      - ./ssl:/etc/ssl/certs/nginx:ro        
+    network_mode: host
