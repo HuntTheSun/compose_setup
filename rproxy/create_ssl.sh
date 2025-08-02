@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
-set -e
+
+mkdir -p ssl
+
 sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ./ssl/$1.key -out ./ssl/$1.crt
+
 exit 0
